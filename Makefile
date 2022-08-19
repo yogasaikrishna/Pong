@@ -2,7 +2,8 @@ CC = g++
 LANG_STD = -std=c++17
 COMPILER_FLAGS = -Wall -Wfatal-errors
 INCLUDE_PATH = -I"/opt/homebrew/include/"
-SRC_FILES = ./src/*.cpp
+SRC_FILES = ./src/*.cpp \
+			./src/**/*.cpp
 LINKER_FLAGS = -L/opt/homebrew/lib -lSDL2
 OBJ_NAME = pong
 

@@ -48,11 +48,18 @@ void Game::Init() {
 }
 
 void Game::Run() {
+  SetUp();
   while (isRunning) {
     ProcessInput();
     Update();
     Render();
   }
+}
+
+void Game::SetUp() {
+  double y = (windowHeight / 2.0) - 50.0;
+  playerOne = std::make_unique<Player>(10, y, 15, 100.0, "P1");
+  playerTwo = std::make_unique<Player>(windowWidth - 25, y, 15, 100.0, "P2");
 }
 
 void Game::ProcessInput() {
@@ -66,17 +73,39 @@ void Game::ProcessInput() {
         if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
           isRunning = false;
         }
+        playerOne->OnKeyDown(sdlEvent.key.keysym.sym);
+        playerTwo->OnKeyDown(sdlEvent.key.keysym.sym);
         break;
     }
   }
 }
 
 void Game::Update() {
+  int timeToWait = MILLISECONDS_PER_FRAME - (SDL_GetTicks() - timeSinceLastUpdate);
+  if (timeToWait > 0 && timeToWait <= MILLISECONDS_PER_FRAME) {
+    SDL_Delay(timeToWait);
+  }
 
+  double deltaTime = (SDL_GetTicks() - timeSinceLastUpdate) / 1000.0;
+  timeSinceLastUpdate = SDL_GetTicks();
+
+  playerOne->Update(deltaTime, windowHeight);
+  playerTwo->Update(deltaTime, windowHeight);
 }
 
 void Game::Render() {
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+  SDL_RenderClear(renderer);
 
+  int x = windowWidth / 2;
+
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 155);
+  SDL_RenderDrawLine(renderer, x, 0, x, windowHeight);
+
+  playerOne->Render(renderer);
+  playerTwo->Render(renderer);
+
+  SDL_RenderPresent(renderer);
 }
 
 void Game::Destroy() {

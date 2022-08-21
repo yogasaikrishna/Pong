@@ -4,8 +4,9 @@
 #include <memory>
 #include <SDL2/SDL.h>
 #include "../Entity/Player.h"
+#include "../Entity/Ball.h"
 
-const int FPS = 24;
+const int FPS = 60;
 const int MILLISECONDS_PER_FRAME = 1000 / FPS;
 
 class Game {
@@ -17,6 +18,7 @@ class Game {
 
     std::unique_ptr<Player> playerOne;
     std::unique_ptr<Player> playerTwo;
+    std::unique_ptr<Ball> ball;
 
     SDL_Window* window;
     SDL_Renderer* renderer;

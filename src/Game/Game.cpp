@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include "Game.h"
 #include "SDL2/SDL.h"
@@ -60,6 +61,12 @@ void Game::SetUp() {
   double y = (windowHeight / 2.0) - 50.0;
   playerOne = std::make_unique<Player>(10, y, 15, 100.0, "P1");
   playerTwo = std::make_unique<Player>(windowWidth - 25, y, 15, 100.0, "P2");
+
+  srand(time(NULL));
+
+  double ballX = rand() % (windowWidth - 200) + 100;
+  std::cout << "Ball X: " << ballX << std::endl;
+  ball = std::make_unique<Ball>(ballX, 50);
 }
 
 void Game::ProcessInput() {
@@ -91,6 +98,7 @@ void Game::Update() {
 
   playerOne->Update(deltaTime, windowHeight);
   playerTwo->Update(deltaTime, windowHeight);
+  ball->Update(deltaTime, windowWidth, windowHeight);
 }
 
 void Game::Render() {
@@ -104,6 +112,7 @@ void Game::Render() {
 
   playerOne->Render(renderer);
   playerTwo->Render(renderer);
+  ball->Render(renderer);
 
   SDL_RenderPresent(renderer);
 }

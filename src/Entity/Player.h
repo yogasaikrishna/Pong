@@ -47,10 +47,10 @@ class Player {
 
     void Update(double deltaTime, int windowHeight) {
       if (this->direction == UP) {
-        this->y -= 300.0 * deltaTime;
+        this->y -= 600.0 * deltaTime;
         std::cout << this->tag << " UP y: " << this->y << " DT: " << deltaTime << std::endl;
       } else if (this->direction == DOWN) {
-        this->y += 300 * deltaTime;
+        this->y += 600 * deltaTime;
         std::cout << this->tag << " DOWN y: " << this->y << " DT: " << deltaTime << std::endl;
       }
       if (this->y < 10) {

@@ -4,7 +4,7 @@ COMPILER_FLAGS = -Wall -Wfatal-errors
 INCLUDE_PATH = -I"/opt/homebrew/include/"
 SRC_FILES = ./src/*.cpp \
 			./src/**/*.cpp
-LINKER_FLAGS = -L/opt/homebrew/lib -lSDL2
+LINKER_FLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_ttf
 OBJ_NAME = pong
 
 build:

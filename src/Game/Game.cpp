@@ -1,9 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "Game.h"
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_render.h"
-#include "SDL2/SDL_video.h"
+#include <SDL2/SDL.h>
 
 Game::Game() {
   isRunning = false;
@@ -19,6 +17,8 @@ void Game::Init() {
   windowHeight = 600;
 
   SDL_Init(SDL_INIT_EVERYTHING);
+
+  TTF_Init();
 
   window = SDL_CreateWindow(
     "Pong",
@@ -58,6 +58,11 @@ void Game::Run() {
 }
 
 void Game::SetUp() {
+  font = TTF_OpenFont("./assets/fonts/silkscreen.ttf", 48);
+  if (!font) {
+    std::cout << "Error opening font!" << std::endl;
+  }
+
   double y = (windowHeight / 2.0) - 50.0;
   playerOne = std::make_unique<Player>(10, y, 15, 100.0, "P1");
   playerTwo = std::make_unique<Player>(windowWidth - 25, y, 15, 100.0, "P2");
@@ -67,6 +72,8 @@ void Game::SetUp() {
   double ballX = rand() % (windowWidth - 200) + 100;
   std::cout << "Ball X: " << ballX << std::endl;
   ball = std::make_unique<Ball>(ballX, 50);
+
+  collisionSystem = std::make_unique<CollisionSystem>();
 }
 
 void Game::ProcessInput() {
@@ -83,22 +90,30 @@ void Game::ProcessInput() {
         playerOne->OnKeyDown(sdlEvent.key.keysym.sym);
         playerTwo->OnKeyDown(sdlEvent.key.keysym.sym);
         break;
+      case SDL_KEYUP:
+        playerOne->OnKeyUp();
+        playerTwo->OnKeyUp();
+        break;
     }
   }
 }
 
 void Game::Update() {
-  int timeToWait = MILLISECONDS_PER_FRAME - (SDL_GetTicks() - timeSinceLastUpdate);
+  double newTime = SDL_GetTicks();
+
+  int timeToWait = MILLISECONDS_PER_FRAME - (newTime - timeSinceLastUpdate);
   if (timeToWait > 0 && timeToWait <= MILLISECONDS_PER_FRAME) {
     SDL_Delay(timeToWait);
   }
 
-  double deltaTime = (SDL_GetTicks() - timeSinceLastUpdate) / 1000.0;
-  timeSinceLastUpdate = SDL_GetTicks();
+  double deltaTime = (newTime - timeSinceLastUpdate) / 1000.0;
+  timeSinceLastUpdate = newTime;
 
   playerOne->Update(deltaTime, windowHeight);
   playerTwo->Update(deltaTime, windowHeight);
   ball->Update(deltaTime, windowWidth, windowHeight);
+
+  collisionSystem->CheckCollision(playerOne, playerTwo, ball, windowWidth, windowHeight);
 }
 
 void Game::Render() {
@@ -113,11 +128,14 @@ void Game::Render() {
   playerOne->Render(renderer);
   playerTwo->Render(renderer);
   ball->Render(renderer);
+  playerOne->RenderScore(renderer, font, windowWidth);
+  playerTwo->RenderScore(renderer, font, windowWidth);
 
   SDL_RenderPresent(renderer);
 }
 
 void Game::Destroy() {
+  TTF_CloseFont(font);
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();

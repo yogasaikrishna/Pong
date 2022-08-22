@@ -1,3 +1,4 @@
 compile_commands.json
 pong
 .cache/
+.DS_Store
